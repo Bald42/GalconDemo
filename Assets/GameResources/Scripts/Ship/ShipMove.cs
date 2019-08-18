@@ -9,22 +9,13 @@ using UnityEngine.AI;
 public class ShipMove : MonoBehaviour
 {
     [SerializeField]
-    public NavMeshAgent agent = null;
+    private NavMeshAgent agent = new NavMeshAgent ();
     
     /// <summary>
     /// Говорим куда двигатся кораблю
     /// </summary>
     public void MoveTo (Vector3 pointToMove)
     {
-        Debug.LogError("agent = " + agent);
-        Debug.LogError("pointToMove = " + pointToMove);
         agent.SetDestination(pointToMove);
-        StartCoroutine(TempSetActive());
-    }
-
-    private IEnumerator TempSetActive()
-    {
-        yield return new WaitForSeconds(1f);
-        gameObject.SetActive(false);       
     }
 }

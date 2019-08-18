@@ -77,12 +77,13 @@ public class PlanetController : MonoBehaviour
     /// <summary>
     /// Обработчик события атаки
     /// </summary>
-    private void OnAttack (GameObject _targetPlanet)
+    private void OnAttack(GameObject _targetPlanet)
     {
         if (isSelect && numberShips > 1)
         {
             StartCoroutine(Attack((int)(numberShips * 0.5f), _targetPlanet));
             numberShips = (int)(numberShips * 0.5f);
+            interfacePlanet.ViewText(numberShips.ToString());
         }
     }
     #endregion Subscribes / UnSubscribes 
@@ -92,7 +93,6 @@ public class PlanetController : MonoBehaviour
     /// </summary>
     private IEnumerator Attack(int _numberShips, GameObject _targetPlanet)
     {
-        Debug.LogError("_numberShips = " + _numberShips);
         while (_numberShips > 0)
         {
             ShipPool.Instance.OnAttack(_targetPlanet, gameObject);
@@ -109,7 +109,7 @@ public class PlanetController : MonoBehaviour
     /// <summary>
     /// Инициализация
     /// </summary>
-    private void Init ()
+    private void Init()
     {
         if (typeThisPlanet != TypePlanet.Player)
         {
@@ -160,6 +160,7 @@ public class PlanetController : MonoBehaviour
                     }
                     gameObject.tag = "Player";
                     interfacePlanet.gameObject.SetActive(true);
+                    interfacePlanet.ViewText(numberShips.ToString());
                     break;
                 }
             default:
@@ -178,13 +179,38 @@ public class PlanetController : MonoBehaviour
         {
             if (typeThisPlanet != TypePlanet.Empty)
             {
-                numberShips += 1;
+                numberShips += 5;
                 if (interfacePlanet)
                 {
                     interfacePlanet.ViewText(numberShips.ToString());
                 }
             }
             yield return new WaitForSeconds(1f);
+        }
+    }
+
+    /// <summary>
+    /// Отнимаем кораблики
+    /// </summary>
+    public void MinusShip()
+    {
+        //TODO если допиливать бота, то надо добавить от кого прилетели корабли
+        if (typeThisPlanet == TypePlanet.Empty)
+        {
+            if (numberShips > 0)
+            {
+                numberShips--;
+            }
+            else
+            {
+                typeThisPlanet = TypePlanet.Player;
+                CheckNewParametrs();
+            }
+        }        
+        else if (typeThisPlanet == TypePlanet.Player)
+        {
+            numberShips++;
+            interfacePlanet.ViewText(numberShips.ToString());
         }
     }
 }

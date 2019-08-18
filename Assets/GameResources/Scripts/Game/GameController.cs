@@ -7,7 +7,6 @@ using UnityEngine;
 /// </summary>
 public class GameController : MonoBehaviour
 {
-
     #region Subscribes / UnSubscribes
     private void OnEnable()
     {
@@ -36,12 +35,7 @@ public class GameController : MonoBehaviour
     /// </summary>
     private void OnSpawnPlanets()
     {
-        
-        for (int i = 0; i < 5; i++)
-        {
-            CheckStartPlanet();
-        }
-        //CheckStartPlanet();
+        CheckStartPlanet();
     }
     #endregion Subscribes / UnSubscribes 
 

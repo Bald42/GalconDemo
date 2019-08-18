@@ -52,7 +52,8 @@ public class ShipPool : MonoBehaviour
         {
             if (!shipParametrs[i].gameObject.activeSelf)
             {
-                currentShipParametrs = shipParametrs[i];                
+                currentShipParametrs = shipParametrs[i];
+                currentShipMove = shipMove[i];
                 isFind = true;
                 break;
             }
@@ -65,9 +66,10 @@ public class ShipPool : MonoBehaviour
             shipParametrs.Add(currentShipParametrs);
             shipMove.Add(currentShipMove);
         }
-
+                
         currentShipParametrs.transform.position = who.transform.position;
         currentShipParametrs.gameObject.SetActive(true);
-        currentShipMove.MoveTo(target.transform.position);        
+        currentShipParametrs.Target = target;
+        currentShipMove.MoveTo(target.transform.position);
     }
 }
