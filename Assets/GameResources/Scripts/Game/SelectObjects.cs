@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class SelectObjects : MonoBehaviour
 {
-    public static List<GameObject> unit; // массив всех юнитов, которых мы можем выделить
     public static List<GameObject> unitSelected; // массив выделенных юнитов
 
     public GUISkin skin;
@@ -15,7 +14,6 @@ public class SelectObjects : MonoBehaviour
 
     void Awake()
     {
-        unit = new List<GameObject>();
         unitSelected = new List<GameObject>();
     }
 
@@ -86,20 +84,21 @@ public class SelectObjects : MonoBehaviour
 
             GUI.Box(rect, "");
 
-            for (int j = 0; j < unit.Count; j++)
+            for (int j = 0; j < PlanetPool.Instance.PlanetObjects.Count; j++)
             {
                 // трансформируем позицию объекта из мирового пространства, в пространство экрана
-                Vector2 tmp = new Vector2(Camera.main.WorldToScreenPoint(unit[j].transform.position).x, Screen.height - Camera.main.WorldToScreenPoint(unit[j].transform.position).y);
+                Vector2 tmp = new Vector2(Camera.main.WorldToScreenPoint(PlanetPool.Instance.PlanetObjects[j].transform.position).x, Screen.height - 
+                    Camera.main.WorldToScreenPoint(PlanetPool.Instance.PlanetObjects[j].transform.position).y);
 
                 if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
                 {
                     if (unitSelected.Count == 0)
                     {
-                        unitSelected.Add(unit[j]);
+                        unitSelected.Add(PlanetPool.Instance.PlanetObjects[j]);
                     }
-                    else if (!CheckUnit(unit[j]))
+                    else if (!CheckUnit(PlanetPool.Instance.PlanetObjects[j]))
                     {
-                        unitSelected.Add(unit[j]);
+                        unitSelected.Add(PlanetPool.Instance.PlanetObjects[j]);
                     }
                 }
             }
