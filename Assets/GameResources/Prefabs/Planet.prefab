@@ -234,6 +234,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e41cbcdb2c2fcbf419b7d35dac2600ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  planetParametrs: {fileID: 11400000, guid: 5282dab0ea5ece14f8c36b5c42337b5b, type: 2}
   typeThisPlanet: 0
   materialPlanet: {fileID: 6408104282788231994}
   interfacePlanet: {fileID: 0}
+  isSelect: 0
+  numberShips: 0

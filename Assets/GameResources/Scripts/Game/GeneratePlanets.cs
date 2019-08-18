@@ -11,6 +11,9 @@ public class GeneratePlanets : MonoBehaviour
     public static event SpawnPlanetsEventHandler OnSpawnPlanets = delegate { };
 
     [SerializeField]
+    private PlanetScriptableObject planetParametrs = null;
+
+    [SerializeField]
     private Transform platform = null;
 
     [SerializeField]
@@ -19,6 +22,7 @@ public class GeneratePlanets : MonoBehaviour
     [SerializeField]
     private GameObject prefabPlanet = null;
 
+    /*
     [SerializeField]
     private Vector2 randomScale = Vector2.zero;
 
@@ -27,6 +31,7 @@ public class GeneratePlanets : MonoBehaviour
 
     [SerializeField]
     private float distanceToNearestPlanet = 2f;
+    */
 
     private List<GameObject> planets = new List<GameObject>();
 
@@ -57,11 +62,11 @@ public class GeneratePlanets : MonoBehaviour
     /// </summary>
     private void SpawnPlanets()
     {
-        for (int i=0; i < numberPlanets; i++)
+        for (int i=0; i < planetParametrs.NumberPlanets; i++)
         {
             newPlanet = Instantiate(prefabPlanet, Vector3.zero, Quaternion.identity);
             planets.Add(newPlanet);
-            newPlanet.transform.localScale = Vector3.one * Random.RandomRange(randomScale.x, randomScale.y);
+            newPlanet.transform.localScale = Vector3.one * Random.RandomRange(planetParametrs.RandomScale.x, planetParametrs.RandomScale.y);
             currentNumber++;
             newPlanet.transform.localPosition = FindNewPosition();
             newPlanet.name = newPlanet.name.Replace("(Clone)", " " + i.ToString());            
@@ -102,7 +107,7 @@ public class GeneratePlanets : MonoBehaviour
                 distance = (_newPosition - planets[i].transform.position).magnitude -
                     (newPlanet.transform.localScale.x + planets[i].transform.localScale.x) * 0.5f;
 
-                if (distance <= distanceToNearestPlanet)
+                if (distance <= planetParametrs.DistanceToNearestPlanet)
                 {
                     nearbyDistance += planets[i].transform.localScale.x * 0.5f;
                     newNearbyPlanets.NearbyPlanets.Add(planets[i]);
