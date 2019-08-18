@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class PlanetController : MonoBehaviour
 {
+    [SerializeField]
+    private PlanetScriptableObject planetParametrs = null;
+
     public enum TypePlanet
     {
         Empty,
@@ -113,7 +116,7 @@ public class PlanetController : MonoBehaviour
     {
         if (typeThisPlanet != TypePlanet.Player)
         {
-            numberShips = Random.Range(50, 100);
+            numberShips = (int)Random.Range(planetParametrs.RandomShipEmptyPlanet.x, planetParametrs.RandomShipEmptyPlanet.y);
         }
         StartCoroutine(AddShips());
     }
@@ -123,7 +126,7 @@ public class PlanetController : MonoBehaviour
     /// </summary>
     public void AssignToPlayerOnStart()
     {
-        numberShips = 50;
+        numberShips = planetParametrs.StartNumberShip;
         AssignToPlayer();
     }
 
@@ -179,13 +182,13 @@ public class PlanetController : MonoBehaviour
         {
             if (typeThisPlanet != TypePlanet.Empty)
             {
-                numberShips += 5;
+                numberShips += planetParametrs.NumberCreateShipForTime;
                 if (interfacePlanet)
                 {
                     interfacePlanet.ViewText(numberShips.ToString());
                 }
             }
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(planetParametrs.TimerCreateShip);
         }
     }
 
