@@ -60,6 +60,7 @@ public class InterfacePool : MonoBehaviour
         if (!isFind)
         {
             currentInterface = Instantiate(prefabInterface, Vector3.zero, Quaternion.identity, parentInterface).GetComponent<InterfacePlanet>();
+            interfacesPlanets.Add(currentInterface);
         }
 
         currentInterface.transform.position = NewPosition(targetPosition);

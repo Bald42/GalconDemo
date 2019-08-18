@@ -36,10 +36,12 @@ public class GameController : MonoBehaviour
     /// </summary>
     private void OnSpawnPlanets()
     {
+        
         for (int i = 0; i < 5; i++)
         {
             CheckStartPlanet();
         }
+        //CheckStartPlanet();
     }
     #endregion Subscribes / UnSubscribes 
 
@@ -53,7 +55,7 @@ public class GameController : MonoBehaviour
             int randomPlanet = Random.RandomRange(0, PlanetPool.Instance.PlanetControllers.Count);
             if (PlanetPool.Instance.PlanetControllers[randomPlanet].TypeThisPlanet == PlanetController.TypePlanet.Empty)
             {
-                PlanetPool.Instance.PlanetControllers[randomPlanet].AssignToPlayer();
+                PlanetPool.Instance.PlanetControllers[randomPlanet].AssignToPlayerOnStart();
                 break;
             }
         }

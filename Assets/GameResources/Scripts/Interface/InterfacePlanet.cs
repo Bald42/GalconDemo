@@ -17,6 +17,7 @@ public class InterfacePlanet : MonoBehaviour
     private void Awake()
     {
         indicatorSelect.SetActive(false);
+        ViewText("");
     }
 
     /// <summary>
