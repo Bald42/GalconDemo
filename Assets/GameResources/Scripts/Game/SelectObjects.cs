@@ -2,25 +2,40 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// ВЫделяем объекты
+/// </summary>
 public class SelectObjects : MonoBehaviour
 {
-    public static List<GameObject> unit; // массив всех юнитов, которых мы можем выделить
-    public static List<GameObject> unitSelected; // массив выделенных юнитов
+    public delegate void SelectPlanetsEventHandler (GameObject planet, bool isActive);
+    public static event SelectPlanetsEventHandler OnSelectPlanets = delegate { };
 
-    public GUISkin skin;
+    public delegate void AttackPlanetEventHandler(GameObject planet);
+    public static event AttackPlanetEventHandler OnAttackPlanet = delegate { };
+
+    [SerializeField]
+    private List<GameObject> unitSelected; // массив выделенных юнитов
+
+    private GameObject clickObject = null;
+
+    [SerializeField]
+    private GUISkin skin;
+
     private Rect rect;
     private bool draw;
     private Vector2 startPos;
     private Vector2 endPos;
 
-    void Awake()
+    [SerializeField]
+    private Camera camera = null;
+
+    private void Awake()
     {
-        unit = new List<GameObject>();
         unitSelected = new List<GameObject>();
     }
 
     // проверка, добавлен объект или нет
-    bool CheckUnit(GameObject unit)
+    private bool CheckUnit(GameObject unit)
     {
         bool result = false;
         foreach (GameObject u in unitSelected)
@@ -30,39 +45,72 @@ public class SelectObjects : MonoBehaviour
         return result;
     }
 
-    void Select()
+    private void Select()
     {
         if (unitSelected.Count > 0)
         {
             for (int j = 0; j < unitSelected.Count; j++)
             {
-                // делаем что-либо с выделенными объектами
-                unitSelected[j].GetComponentInChildren<MeshRenderer>().material.color = Color.red;
+                OnSelectPlanets(unitSelected[j], true);
             }
         }
     }
 
-    void Deselect()
+    private void Deselect()
     {
         if (unitSelected.Count > 0)
         {
             for (int j = 0; j < unitSelected.Count; j++)
             {
-                // отменяем то, что делали с объектоми
-                unitSelected[j].GetComponentInChildren<MeshRenderer>().material.color = Color.white;
+                OnSelectPlanets(unitSelected[j], false);
             }
         }
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         GUI.skin = skin;
         GUI.depth = 99;
 
         if (Input.GetMouseButtonDown(0))
         {
-            Deselect();
+            //Deselect();
             startPos = Input.mousePosition;
+
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit raycastHit;
+
+            if (Physics.Raycast(ray, out raycastHit))
+            {
+                if (raycastHit.transform.tag == "Player")
+                {
+                    if (unitSelected.Count == 0)
+                    {
+                        clickObject = raycastHit.transform.gameObject;
+                        OnSelectPlanets(clickObject, true);
+                    }
+                }
+                else
+                {
+                    if (raycastHit.transform.tag != "Player" && raycastHit.transform.name.Contains("Planet"))
+                    {
+                        OnAttackPlanet(raycastHit.transform.gameObject);
+                    }
+
+                    if (clickObject)
+                    {
+                        for (int j = 0; j < PlanetPool.Instance.PlanetObjects.Count; j++)
+                        {
+                            if (PlanetPool.Instance.PlanetObjects[j].tag == "Player")
+                            {
+                                OnSelectPlanets(PlanetPool.Instance.PlanetObjects[j], false);
+                            }
+                        }
+                        clickObject = null;
+                    }                    
+                }
+            }
+            Deselect();
             draw = true;
         }
 
@@ -86,20 +134,21 @@ public class SelectObjects : MonoBehaviour
 
             GUI.Box(rect, "");
 
-            for (int j = 0; j < unit.Count; j++)
+            for (int j = 0; j < PlanetPool.Instance.PlanetObjects.Count; j++)
             {
                 // трансформируем позицию объекта из мирового пространства, в пространство экрана
-                Vector2 tmp = new Vector2(Camera.main.WorldToScreenPoint(unit[j].transform.position).x, Screen.height - Camera.main.WorldToScreenPoint(unit[j].transform.position).y);
+                Vector2 tmp = new Vector2(Camera.main.WorldToScreenPoint(PlanetPool.Instance.PlanetObjects[j].transform.position).x, Screen.height - 
+                    Camera.main.WorldToScreenPoint(PlanetPool.Instance.PlanetObjects[j].transform.position).y);
 
-                if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
+                if (rect.Contains(tmp) && PlanetPool.Instance.PlanetObjects[j].tag == "Player") // проверка, находится-ли текущий объект в рамке
                 {
                     if (unitSelected.Count == 0)
                     {
-                        unitSelected.Add(unit[j]);
+                        unitSelected.Add(PlanetPool.Instance.PlanetObjects[j]);
                     }
-                    else if (!CheckUnit(unit[j]))
+                    else if (!CheckUnit(PlanetPool.Instance.PlanetObjects[j]))
                     {
-                        unitSelected.Add(unit[j]);
+                        unitSelected.Add(PlanetPool.Instance.PlanetObjects[j]);
                     }
                 }
             }

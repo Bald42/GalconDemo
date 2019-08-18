@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class GeneratePlanets : MonoBehaviour
 {
+    public delegate void SpawnPlanetsEventHandler();
+    public static event SpawnPlanetsEventHandler OnSpawnPlanets = delegate { };
+
     [SerializeField]
     private Transform platform = null;
 
@@ -64,6 +67,7 @@ public class GeneratePlanets : MonoBehaviour
             newPlanet.name = newPlanet.name.Replace("(Clone)", " " + i.ToString());            
             newPlanet.transform.SetParent(poolPlanets.transform, true);            
         }
+        OnSpawnPlanets();
     }
 
     /// <summary>
