@@ -25,15 +25,15 @@ public class GeneratePlanets : MonoBehaviour
     [SerializeField]
     private float distanceToNearestPlanet = 2f;
 
-    [SerializeField]
     private List<GameObject> planets = new List<GameObject>();
 
-    [SerializeField]
-    private List<Vector3> nearbyPlanets = new List<Vector3>();
+    private List<NearbyPlanet> nearbyPlanets = new List<NearbyPlanet>();
+
+    private int currentNumber = 0;
+    private GameObject newPlanet = null;
 
     private void Awake()
     {
-        Debug.LogError("000");
         ScalePlatform();
         SpawnPlanets();
     }
@@ -43,7 +43,6 @@ public class GeneratePlanets : MonoBehaviour
     /// </summary>
     private void ScalePlatform()
     {
-        Debug.LogError(Screen.width + "/" + Screen.height);
         Vector3 newScale = Vector3.one;
         newScale.x *= Screen.width * 0.001f;
         newScale.z *= Screen.height * 0.001f;
@@ -57,14 +56,13 @@ public class GeneratePlanets : MonoBehaviour
     {
         for (int i=0; i < numberPlanets; i++)
         {
-            Debug.LogError("00");
-            //TODO добавить рандом выше
-            GameObject newPlanet = Instantiate(prefabPlanet, RandomtPosition(), Quaternion.identity);
-            newPlanet.transform.localScale = Vector3.one * Random.RandomRange(randomScale.x, randomScale.y);
-            newPlanet.transform.localPosition = SelectPosition();
-            newPlanet.name = newPlanet.name.Replace("(Clone)", " " + i.ToString());            
-            newPlanet.transform.SetParent(poolPlanets.transform, true);
+            newPlanet = Instantiate(prefabPlanet, Vector3.zero, Quaternion.identity);
             planets.Add(newPlanet);
+            newPlanet.transform.localScale = Vector3.one * Random.RandomRange(randomScale.x, randomScale.y);
+            currentNumber++;
+            newPlanet.transform.localPosition = FindNewPosition();
+            newPlanet.name = newPlanet.name.Replace("(Clone)", " " + i.ToString());            
+            newPlanet.transform.SetParent(poolPlanets.transform, true);            
         }
     }
 
@@ -78,69 +76,67 @@ public class GeneratePlanets : MonoBehaviour
         randomPosition.z = Random.Range(-platform.localScale.z, platform.localScale.z) * 5f;
         return randomPosition;
     }
-
-    /// <summary>
-    /// Выбираем случайную позицию
-    /// </summary>
-    private Vector3 SelectPosition ()
-    {
-        //лешняя 
-        Vector3 _planetPosition = Vector3.zero;
-        FindNewPosition(_planetPosition);
-        Debug.LogError("_planetPosition = " + _planetPosition);
-        return _planetPosition;
-    }
-
+    
     /// <summary>
     /// Находим позицию для планеты выполняя условия
     /// </summary>
-    private void FindNewPosition (Vector3 _newPosition)
+    private Vector3 FindNewPosition ()
     {
-        if (planets.Count == 0)
-        {
-            return;
-        }
+        Vector3 _newPosition = Vector3.zero;
+        NearbyPlanet newNearbyPlanets = new NearbyPlanet();
+        nearbyPlanets.Add(newNearbyPlanets);
 
-        Debug.LogError("0");
-        bool isFind = false;
-        while (!isFind)
+        while (true)
         {
-            Debug.LogError("1");
-            nearbyPlanets.Clear();
             float distance = 0f;
             float nearbyDistance = 0f;
-            _newPosition.x = Random.Range(-platform.localScale.x, platform.localScale.x) * 5f;
-            _newPosition.z = Random.Range(-platform.localScale.z, platform.localScale.z) * 5f;
+            _newPosition = RandomtPosition();            
 
-            Debug.LogError("_newPosition = " + _newPosition);
             //заполняем лист соседних планет
-            for (int i=0; i < planets.Count; i++)
+            for (int i = 0; i < planets.Count; i++)
             {
-                distance = (_newPosition - planets[i].transform.position).sqrMagnitude;
-                Debug.LogError("distance = " + distance);
+                distance = (_newPosition - planets[i].transform.position).magnitude -
+                    (newPlanet.transform.localScale.x + planets[i].transform.localScale.x) * 0.5f;
+
                 if (distance <= distanceToNearestPlanet)
                 {
-                    Debug.LogError("2");
                     nearbyDistance += planets[i].transform.localScale.x * 0.5f;
-                    nearbyPlanets.Add(planets[i].transform.position);
+                    newNearbyPlanets.NearbyPlanets.Add(planets[i]);
+                    newNearbyPlanets.NearbyDistance += planets[i].transform.localScale.x * 0.5f;
                 }
             }
 
-            if (nearbyPlanets.Count == 0)
+            if (nearbyPlanets.Count == 1 || nearbyPlanets[currentNumber-1].NearbyPlanets.Count == 0)
             {
-                isFind = true;
+                break;
             }
 
+            bool isSatisfy = true;
             //проверям удовлетворяет ли эта координата условиям cпавна
-            for (int i=0; i < nearbyPlanets.Count; i++)
-            {
-                distance = (_newPosition - nearbyPlanets[i]).sqrMagnitude;
-                if (distance > nearbyDistance)
+            for (int i=0; i < nearbyPlanets[currentNumber - 1].NearbyPlanets.Count; i++)
+            {                
+                distance = (_newPosition - nearbyPlanets[currentNumber - 1].NearbyPlanets[i].transform.position).magnitude -
+                    (newPlanet.transform.localScale.x + nearbyPlanets[currentNumber - 1].NearbyPlanets[i].transform.localScale.x) * 0.5f;
+                
+                if (distance < nearbyDistance)
                 {
-                    Debug.LogError("3");
-                    isFind = true;
+                    isSatisfy = false;
+                    break;
                 }
+            }
+
+            if (isSatisfy)
+            {
+                break;
             }
         }
+        return _newPosition;
+    }
+
+    [System.Serializable]
+    public class NearbyPlanet
+    {
+        public List<GameObject> NearbyPlanets = new List<GameObject>();
+        public float NearbyDistance = 0f;
     }
 }

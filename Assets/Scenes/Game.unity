@@ -331,7 +331,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 864991079}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 13.7, z: 0}
+  m_LocalPosition: {x: 0, y: 15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1865874830}
@@ -390,7 +390,7 @@ GameObject:
   - component: {fileID: 1310721326}
   - component: {fileID: 1310721328}
   - component: {fileID: 1310721327}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GeneratePlatform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -920,11 +920,9 @@ MonoBehaviour:
   poolPlanets: {fileID: 1704048140}
   prefabPlanet: {fileID: 6408104283734783342, guid: 646e26bcc6535d94e99de60d474e8348,
     type: 3}
-  randomScale: {x: 0.5, y: 2}
-  numberPlanets: 5
-  distanceToNearestPlanet: 2
-  planets: []
-  nearbyPlanets: []
+  randomScale: {x: 1, y: 2}
+  numberPlanets: 20
+  distanceToNearestPlanet: 5
 --- !u!1001 &2089720726
 PrefabInstance:
   m_ObjectHideFlags: 0
